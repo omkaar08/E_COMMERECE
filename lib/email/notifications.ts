@@ -1,8 +1,16 @@
 import { Resend } from 'resend'
 import { formatPrice } from '@/lib/utils/product'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM_EMAIL = process.env.EMAIL_FROM || 'noreply@yourdomain.com'
+
+// Lazy instantiation to avoid build-time errors
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY is not defined in environment variables')
+  }
+  return new Resend(apiKey)
+}
 
 interface OrderEmailData {
   customerName: string
@@ -127,6 +135,7 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData) {
       </html>
     `
 
+    const resend = getResendClient()
     const { data: emailResult, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: data.customerEmail,
@@ -215,6 +224,7 @@ export async function sendOrderShippedEmail(data: ShipmentEmailData) {
       </html>
     `
 
+    const resend = getResendClient()
     const { data: emailResult, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: data.customerEmail,
@@ -293,6 +303,7 @@ export async function sendOrderDeliveredEmail(
       </html>
     `
 
+    const resend = getResendClient()
     const { data: emailResult, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: customerEmail,
