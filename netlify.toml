@@ -1,7 +1,8 @@
 # Netlify Configuration for Next.js 16
 [build]
   command = "npm run build"
-  publish = ".next"
+  # Let @netlify/plugin-nextjs handle the publish directory
+  # Do not set a publish directory manually
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
@@ -9,13 +10,6 @@
 [build.environment]
   NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
-
-# Redirect all requests to Next.js
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/nextjs/:splat"
-  status = 200
-  force = true
 
 # Security headers
 [[headers]]
